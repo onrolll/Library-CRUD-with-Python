@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Search{% endblock %}</h1>
+  <a class='action' href ='{{ url_for('library.index') }}'>Books</a>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="title">Title</label>
+    <input name="title" id="title" value="{{ request.form['title'] }}" >
+    <!-- <label for="body">Body</label>
+    <textarea name="body" id="body">{{ request.form['body'] }}</textarea> -->
+    <label for="author">Author Name</label>
+    <input name="author_name" id="author_name" value="{{ request.form['author_name'] }}" >
+    <label for="published">Published On</label>
+    <input name="published" id="published" value="{{ request.form['published'] }}" placeholder='YYYY-MM-DD' >
+
+    <input type="submit" value="Search">
+
+  </form>
+{% endblock %}

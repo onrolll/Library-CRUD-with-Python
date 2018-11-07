@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Books{% endblock %}</h1>
+  {% if g.user['borrowed'] != -1 %}
+    <a class='action' href ='{{ url_for('library.user_books') }}'>My Books</a>
+    <a class='action' href ='{{ url_for('library.search' )}}'>Search Library</a>
+  {% endif %}
+  {% if g.user['borrowed'] == -1 %}
+    <a class='action' href='{{ url_for('library.books_in_use') }}'>Books in Use</a>
+    <a class='action' href='{{ url_for('library.orders') }}'>Pending Orders</a>
+    <a class='action' href='{{ url_for('auth.register_superuser') }}'>Add Superuser</a>
+    <a class='action' href='{{ url_for('library.add') }}'>Add Book</a>
+    <a class='action' href ='{{ url_for('library.search' )}}'>Search Library</a>
+  {% endif %}
+  
+{% endblock %}
+
+{% block content %}
+  {% for book in books %}
+    <article class="post" disabled="true">
+      <header>
+        <div>
+          <h1>{{ book['title'] }}</h1>
+          <div >by {{ book['name'] }} on {{ book['published'].strftime('%Y-%m-%d') }}</div>
+          <div class="about">Currently available -> {{ book['available'] }}</div>
+          <div class="about">Pending orders-> {{ book['pending_orders'] }}</div>
+          {% if g.user['borrowed'] != -1 %}
+          <form action="{{ url_for('library.borrow', id=book['id']) }}" method="post">
+            <input class="danger" type="submit" value="Borrow" style="position: relative;left: 210px">
+          <input style="width: 200px; position: absolute;"name="borrow" id="borrow"  placeholder='How long would you keep it? (in days)'>
+          </form>
+          {% endif %}
+          {% if g.user['borrowed'] == -1 %}
+          <form action="{{ url_for('library.delete', id=book['id']) }}" method="post">
+            <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+          </form> 
+          {% endif %}
+          
+          
+        </div>
+      </header>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

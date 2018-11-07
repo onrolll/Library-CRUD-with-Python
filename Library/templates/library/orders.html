@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Orders{% endblock %}</h1>
+  
+    <a class='action' href='{{ url_for('library.books_in_use') }}'> Books in Use </a>
+    <a class='action' href='{{ url_for('library.orders') }}'>Pending Orders</a>
+    <a class='action' href='{{ url_for('auth.register_superuser') }}'>Add Superuser </a>
+    <a class='action' href='{{ url_for('library.add') }}'>Add Book </a>
+    <a class='action' href ='{{ url_for('library.search') }}'>Search Library</a>
+
+{% endblock %}
+
+{% block content %}
+  {% for order in orders %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ order['title'] }}</h1>
+          <div class='about'>by {{ order['author'] }}</div>
+          {% if order['borrow'] == 1 %}
+          <div>Waiting to receive -> {{ order['username'] }}; return by {{ order['return_by'].strftime('%Y-%m-%d')  }}; order ID -> {{ order['id'] }};</div>
+          <form action="{{ url_for('library.order', id=order['id']) }}" method='post' >
+            <input class="danger" style="position: absolute;" type="submit" value="Place Order" onclick="return confirm('Are you sure?');">
+          </form> 
+          {% endif %}
+          {% if order['borrow'] == 0 %}
+          <div>Waiting to return -> {{ order['username'] }}; return by {{order['return_by'].strftime('%Y-%m-%d')}}; order ID -> {{ order['id'] }};</div>
+          
+          <form action="{{ url_for('library.book_returned', id=order['book_id']) }}" method='post' >
+            <input class="danger" style="position: absolute;"type="submit" value="Book Returned" onclick="return confirm('Are you sure?');">
+          </form> 
+          {% endif %}
+          <form action="{{ url_for('library.cancel_order', id=order['id']) }}" method='post' >
+            <input class="danger" style="position: relative; left: 100px;"type="submit" value="Cancel Order" onclick="return confirm('Are you sure?');">
+          </form> 
+          
+          
+          
+        </div>
+       
+       
+      </header>
+     
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

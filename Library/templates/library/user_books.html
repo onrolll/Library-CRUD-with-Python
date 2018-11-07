@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Books{% endblock %}</h1>
+  {% if g.user['borrowed'] != -1 %}
+    <a class='action' href ='{{ url_for('library.index') }}'>Books</a>
+    <a class='action' href ='{{ url_for('library.search' )}}'>Search Library</a>
+  {% endif %}
+  {% if g.user['borrowed'] == -1 %}
+    <a class='action' href='{{ url_for('library.index') }}'>Books</a>
+    <a class='action' href='{{ url_for('library.orders') }}'>Pending Orders</a>
+    <a class='action' href='{{ url_for('auth.register_superuser') }}'>Add Superuser</a>
+    <a class='action' href='{{ url_for('library.add') }}'>Add Book</a>
+    <a class='action' href ='{{ url_for('library.search' )}}'>Search Library</a>
+  {% endif %}
+  
+{% endblock %}
+
+{% block content %}
+  {% for book in books %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ book['title'] }}</h1>
+          <div class='about'>by {{ book['author'] }} published on {{ book['published'].strftime('%Y-%m-%d') }}</div>
+          {% if g.user['borrowed'] != -1 %}
+          <div>return by {{ book['return_by'].strftime('%Y-%m-%d') }};</div>
+          <form action="{{ url_for('library.return_book', id = book['id'] ) }}" method='post' >
+            <input class="danger" type="submit" value="Return Book" onclick="return confirm('Are you sure?');">
+          </form> 
+          {% endif %} 
+          {% if g.user['borrowed'] == -1 %}
+          <div >{{ book['user'] }} should return book by {{ book['return_by'].strftime('%Y-%m-%d') }};</div>
+          <form action="{{ url_for('library.book_returned', id = book['id'] ) }}" method='post'>
+            <input class="danger" type="submit" value="Book Returned" onclick="return confirm('Are you sure?');">
+          </form>  
+          {% endif %}
+          
+          
+          
+        </div>
+       
+       
+      </header>
+     
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
